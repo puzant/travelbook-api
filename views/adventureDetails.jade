@@ -1,0 +1,38 @@
+extends layout
+include deleteModal.jade
+include editModal.jade
+
+block adventureDetails
+  div(style="padding: 30px")
+    h1 Adventure Details
+
+    .border.p-3.rounded-2
+      .d-flex.gap-1
+        h5= `${adventure.city},`
+        h5= adventure.country
+      p= `Duration: ${adventure.duration} Days`
+      p= `Date: ${adventure.date.toLocaleDateString()}`
+      p= `Travel Style: ${adventure.travelStyle}`
+      .d-flex.gap-3
+        img.bg-body-tertiary.p-2.rounded-2(onclick="openEditModal(event)" style="cursor: pointer" src='/images/edit.svg' data-bs-toggle="modal" data-bs-target="#editModal")
+        img.bg-body-tertiary.p-2.rounded-2(onclick="openDeleteModal(event, #{JSON.stringify(adventureDetails)})" style="cursor: pointer" src='/images/delete.svg' data-bs-toggle="modal" data-bs-target="#deleteModal")
+    
+    input.form-control.mt-2(type="file")
+    .d-flex.gap-2.mt-4
+      button.btn.btn-primary Upload
+      button.btn.btn-secondary Cancel
+
+    h3.mt-3 Photos:
+    .d-flex.gap-2.flex-wrap
+      each i in [1,2,3,4,5]
+        img.object-fit-cover(src="https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg", alt='Example Image', style='width: 250px; height: 200px;')
+
+    h3.mt-3 Videos:
+    .d-flex.gap-2.flex-wrap
+      each i in [1,2,3,4,5]
+        img.object-fit-cover(src="https://churchatnolensville.com/wp-content/uploads/2020/05/video-placeholder-image-640x360.jpg", alt='Example Image', style='width: 250px; height: 200px;')
+
+  +deleteModal 
+  +editModal
+
+    

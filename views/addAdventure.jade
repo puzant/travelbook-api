@@ -1,26 +1,67 @@
 extends layout
 
-block content
+block adventureForm
 	div(style="padding: 30px")
 		h1 Add New Adventure
 
-		.d-flex.flex-column.gap-3.w-50
+		form.d-flex.flex-column.gap-3.w-50#adventureForm
 			div
 				.form-label Country
-				input.form-control.mt-1(placeholder="Enter visited country" type="text")
+				input.form-control.mt-1(
+					type="text"
+					name="country"
+					placeholder="Enter visited country" 
+				)
 			div
 				.form-label City
-				input.form-control.mt-1(placeholder="Enter visited city" type="text")
+				input.form-control.mt-1(
+					type="text"
+					name="city"
+					placeholder="Enter visited city" 
+				)
 			div
 				.form-label Date
-				input.form-control.mt-1(placeholder="Date of travel" type="text")
+				input.form-control.mt-1(
+					type="text"
+					name="date"
+					placeholder="Date of travel" 
+				)
 			div
 				.form-label Duration
-				input.form-control.mt-1(placeholder="Enter visited days" type="text")
+				input.form-control.mt-1(
+					type="text"
+					name="duration"
+					placeholder="Enter visited days" 
+				)
 			div
 				.form-label Travel Style
-				select.form-select(aria-label="Default select example")
-					option(value="1") one
-					option(value="1") one
-			
-			button.btn.btn-primary(style="width: 100px") Save
+				select.form-select(aria-label="Default select example" name="travelStyle")
+					option(value="Adventure Travel") Adventure Travel
+					option(value="Cultural Travel") Cultural Travel
+					option(value="Luxury Travel") Luxury Travel
+					option(value="Budget Travel") Budget Travel					
+			button.btn.btn-primary(style="width: 100px" onclick="submitForm()") Save
+
+	script. 
+		function submitForm() {
+			const form = document.getElementById('adventureForm');
+			const formData = new FormData(form);
+    	
+			const data = {};
+    	
+			formData.forEach((value, key) => {
+				data[key] = value;
+			});
+
+			fetch('/add-adventure', {
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			})
+			.then(res => res.text())
+			.then(msg => {
+				console.log(msg)
+			}).catch(e => console.error(e))
+		}
