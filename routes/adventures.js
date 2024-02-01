@@ -25,7 +25,7 @@ router.get('/adventure-details/:id', async (req, res) => {
     return res.status(404).send('Adventure not found');
   }
 
-  console.log(adventure)
+  console.log(adventure);
   res.render('adventureDetails', { adventure });
 });
 
@@ -49,6 +49,36 @@ router.post('/add-adventure', async (req, res) => {
   }
 });
 
+router.put('/adventure/:id', async (req, res) => {
+  const adventureId = req.params.id;
+
+  try {
+    const adventure = await Adventure.findById(adventureId);
+
+    if (!adventure)
+      return res.status(404).json({ json: 'Adventure not found' });
+
+    const { country, city, date, duration, travelStyle, images, videos } =
+      req.body;
+
+    adventure.country = country;
+    adventure.city = city;
+    adventure.date = date;
+    adventure.duration = duration;
+    adventure.travelStyle = travelStyle;
+    adventure.travelStyle = images;
+    adventure.travelStyle = videos;
+
+    await adventure.save();
+    res.status(200).json({
+      message: 'Adventure ddited successfully',
+      adventure: adventure,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 router.delete('/adventures/:id', async (req, res) => {
   const adventureId = req.params.id;
 
@@ -56,12 +86,10 @@ router.delete('/adventures/:id', async (req, res) => {
     const adventure = await Adventure.findByIdAndDelete(adventureId);
     if (!adventureId) return res.status(404).send('Adventure not found');
 
-    res
-      .status(200)
-      .json({
-        message: 'Adventure deleted successfully',
-        deletedAdventure: adventure,
-      });
+    res.status(200).json({
+      message: 'Adventure deleted successfully',
+      deletedAdventure: adventure,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
