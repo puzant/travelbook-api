@@ -10,3 +10,31 @@ mixin deleteModal
         .modal-footer
           button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancel
           button.btn.btn-danger(onclick="handleDeleteAdventure()" type="button") Yes
+
+  script. 
+    let currentAdventureId = null   
+    let deleteModalInstance = null
+    let deleteModalElm = document.querySelector('#deleteModal')
+    
+    deleteModalElm.addEventListener('shown.bs.modal', function () {
+      deleteModalInstance = bootstrap.Modal.getInstance(deleteModalElm);
+    });
+
+    function openDeleteModal(event, adventure) {
+      currentAdventureId = adventure._id;
+      event.preventDefault();
+    }
+
+    function handleDeleteAdventure() {
+      fetch(`/adventures/${currentAdventureId}`, {
+        method: 'delete',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(res => {
+        if (res.status === 200) {
+          deleteModalInstance.hide()
+        }
+      }).then(msg => console.log(msg))
+      .catch(e => console.error(e))
+    }

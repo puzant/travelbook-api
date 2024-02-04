@@ -6,26 +6,58 @@ mixin editModal
           h1.modal-title.fs-5#exampleModalLabel Edit Adventure
           button.btn-close(type="button", data-bs-dismiss="modal", aria-label="Close")
         .modal-body
-          .d-flex.flex-column.gap-3
-            div
-              .form-label Country
-              input.form-control.mt-1(placeholder="Enter visited country" type="text")
-            div
-              .form-label City
-              input.form-control.mt-1(placeholder="Enter visited city" type="text")
-            div
-              .form-label Date
-              input.form-control.mt-1(placeholder="Date of travel" type="text")
-            div
-              .form-label Duration
-              input.form-control.mt-1(placeholder="Enter visited days" type="text")
-            div
-              .form-label Travel Style
-              select.form-select(aria-label="Default select example")
-                option(value="Adventure Travel") Adventure Travel
-                option(value="Cultural Travel") Cultural Travel
-                option(value="Luxury Travel") Luxury Travel
-                option(value="Budget Travel") Budget Travel
+          form#editForm 
+            .d-flex.flex-column.gap-3
+              div
+                .form-label Country
+                input.form-control.mt-1(placeholder="Enter visited country" type="text")
+              div
+                .form-label City
+                input.form-control.mt-1(placeholder="Enter visited city" type="text")
+              div
+                .form-label Date
+                input.form-control.mt-1(placeholder="Date of travel" type="text")
+              div
+                .form-label Duration
+                input.form-control.mt-1(placeholder="Enter visited days" type="text")
+              div
+                .form-label Travel Style
+                select.form-select(aria-label="Default select example" type="text")
+                  each style in ["Adventure Travel", "Cultural Travel", "Luxury Travel", "Budget Travel"]
+                    option(value=style) #{style}
         .modal-footer
           button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancel
-          button.btn.btn-primary(type="button") Save
+          button.btn.btn-primary(type="button" onclick="submitForm()") Save
+  
+  script.
+    let selectedAdventure = {} 
+
+    function openEditModal(event, adventure) {
+      selectedAdventure = adventure
+      event.preventDefault();
+    }
+
+    function submitForm() {
+      const form = document.getElementById('editForm');
+      const formData = new FormData(form);
+
+      const data = {}
+
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      console.log(data)
+
+      fetch(`/adventure/${selectedAdventure._id}`, {
+        method: 'put',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(res => res.text())
+      .then(msg => {
+        console.log(msg)
+      }).catch(e => console.error(e))
+    }
