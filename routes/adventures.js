@@ -1,20 +1,20 @@
 const express = require('express');
-const Adventure = require('../models/adventure');
+const { validationResult } = require('express-validator')
 
+const Adventure = require('../models/adventure');
+const adventureValidator = require('../validators/adventures')
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
     const adventures = await Adventure.find();
-    res.render('index', { adventures: adventures });
+    res.json({
+      adventures: adventures
+    })
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
   }
-});
-
-router.get('/add-adventure', (req, res) => {
-  res.render('addAdventure');
 });
 
 router.get('/adventure-details/:id', async (req, res) => {
@@ -25,14 +25,14 @@ router.get('/adventure-details/:id', async (req, res) => {
     return res.status(404).send('Adventure not found');
   }
 
-  console.log(adventure);
-  res.render('adventureDetails', { adventure });
+  res.json({ adventure: adventure });
 });
 
-router.post('/add-adventure', async (req, res) => {
-  try {
-    const { country, city, date, duration, travelStyle } = req.body;
+router.post('/add-adventure', adventureValidator, async (req, res) => {
+  const result = validationResult(req)
 
+  if (result.isEmpty()) {
+    const { country, city, date, duration, travelStyle } = req.body;
     const newAdventure = new Adventure({
       country,
       city,
@@ -42,41 +42,37 @@ router.post('/add-adventure', async (req, res) => {
     });
 
     await newAdventure.save();
-    res.redirect('/add-adventure');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
+    res.json({ adventure: newAdventure })
   }
+
+  res.send({ errors: result.array() })
 });
 
-router.put('/adventure/:id', async (req, res) => {
+router.put('/adventure/:id', adventureValidator, async (req, res) => {
+  const result = validationResult(req)
   const adventureId = req.params.id;
 
-  try {
+  if (result.isEmpty()) {
     const adventure = await Adventure.findById(adventureId);
-
-    if (!adventure)
-      return res.status(404).json({ json: 'Adventure not found' });
-
-    const { country, city, date, duration, travelStyle, images, videos } =
-      req.body;
+    const { country, city, date, duration, travelStyle, images, videos } = req.body;
 
     adventure.country = country;
     adventure.city = city;
     adventure.date = date;
     adventure.duration = duration;
     adventure.travelStyle = travelStyle;
-    adventure.travelStyle = images;
-    adventure.travelStyle = videos;
+    adventure.images = images;
+    adventure.videos = videos;
 
     await adventure.save();
+
     res.status(200).json({
-      message: 'Adventure ddited successfully',
+      message: 'Adventure edited successfully',
       adventure: adventure,
     });
-  } catch (err) {
-    res.status(500).json({ error: 'Internal Server Error' });
   }
+
+  res.send({ errors: result.array() })
 });
 
 router.delete('/adventures/:id', async (req, res) => {
