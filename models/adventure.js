@@ -9,9 +9,12 @@ const AdventureSchema = new Schema({
   city: { type: String },
   travelStyle: { 
     type: String,
-		enum: ['Adventure Travel', 'Cultural Travel', 'Luxury Travel', 'Budget Travel']
-  }
+    enum: ['Adventure Travel', 'Cultural Travel', 'Luxury Travel', 'Budget Travel']
+  },
+  images: [String],
+  videos: [String]
 })
 
 const Adventure = mongoose.model('Adventure', AdventureSchema)
-module.exports = Adventure;
+
+module.exports = Adventure

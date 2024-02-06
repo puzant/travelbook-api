@@ -43,9 +43,9 @@ router.post('/add-adventure', adventureValidator, async (req, res) => {
 
     await newAdventure.save();
     res.json({ adventure: newAdventure })
+  } else {
+    res.send({ errors: result.array() })
   }
-
-  res.send({ errors: result.array() })
 });
 
 router.put('/adventure/:id', adventureValidator, async (req, res) => {
@@ -70,9 +70,9 @@ router.put('/adventure/:id', adventureValidator, async (req, res) => {
       message: 'Adventure edited successfully',
       adventure: adventure,
     });
+  } else {
+    res.send({ errors: result.array() })
   }
-
-  res.send({ errors: result.array() })
 });
 
 router.delete('/adventures/:id', async (req, res) => {
