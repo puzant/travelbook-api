@@ -4,7 +4,7 @@ block adventureForm
 	div(style="padding: 30px")
 		h1 Add New Adventure
 
-		form.d-flex.flex-column.gap-3.w-50#adventureForm
+		form(action="/add-adventure").d-flex.flex-column.gap-3.w-50#adventureForm
 			div
 				.form-label Country
 				input.form-control.mt-1(
@@ -36,32 +36,30 @@ block adventureForm
 			div
 				.form-label Travel Style
 				select.form-select(aria-label="Default select example" name="travelStyle")
-					option(value="Adventure Travel") Adventure Travel
-					option(value="Cultural Travel") Cultural Travel
-					option(value="Luxury Travel") Luxury Travel
-					option(value="Budget Travel") Budget Travel					
-			button.btn.btn-primary(style="width: 100px" onclick="submitForm()") Save
+					each style in ["Adventure Travel", "Cultural Travel", "Luxury Travel", "Budget Travel"]
+						option(value=style) #{style}					
+			button.btn.btn-primary(style="width: 100px" type="submit") Save
 
 	script. 
-		function submitForm() {
-			const form = document.getElementById('adventureForm');
-			const formData = new FormData(form);
+		//- function submitForm() {
+		//- 	const form = document.getElementById('adventureForm');
+		//- 	const formData = new FormData(form);
     	
-			const data = {};
+		//- 	const data = {};
     	
-			formData.forEach((value, key) => {
-				data[key] = value;
-			});
+		//- 	formData.forEach((value, key) => {
+		//- 		data[key] = value;
+		//- 	});
 
-			fetch('/add-adventure', {
-				method: 'post',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			})
-			.then(res => res.text())
-			.then(msg => {
-				console.log(msg)
-			}).catch(e => console.error(e))
-		}
+		//- 	fetch('/add-adventure', {
+		//- 		method: 'post',
+		//- 		headers: {
+		//- 			'Content-Type': 'application/json',
+		//- 		},
+		//- 		body: JSON.stringify(data),
+		//- 	})
+		//- 	.then(res => res.text())
+		//- 	.then(msg => {
+		//- 		console.log(msg)
+		//- 	}).catch(e => console.error(e))
+		//- }
