@@ -1,6 +1,13 @@
 const mongoose = require('mongoose')
-
 const Schema = mongoose.Schema
+
+const ImageSchema = new Schema({
+  originalName: String,
+  path: String,
+  size: Number,
+  mimeType: String,
+  uploadDate: { type: Date, default: Date.now }
+})
 
 const AdventureSchema = new Schema({
   date: { type: Date },
@@ -11,7 +18,7 @@ const AdventureSchema = new Schema({
     type: String,
     enum: ['Adventure Travel', 'Cultural Travel', 'Luxury Travel', 'Budget Travel']
   },
-  images: [String],
+  images: [ImageSchema],
   videos: [String]
 })
 
