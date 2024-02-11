@@ -1,29 +1,23 @@
 const express = require('express');
+const multer = require('multer')
 const { validationResult } = require('express-validator')
-
 const Adventure = require('../models/adventure');
 const adventureValidator = require('../validators/adventures')
+
 const router = express.Router();
+const upload = multer({ dest: 'uploads/photos' });
 
 router.get('/', async (req, res) => {
-  try {
-    const adventures = await Adventure.find();
-    res.json({
-      adventures: adventures
-    })
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
-  }
+  const adventures = await Adventure.find();
+  res.json({ adventures: adventures })
 });
 
 router.get('/adventure-details/:id', async (req, res) => {
   const adventureId = req.params.id;
   const adventure = await Adventure.findById(adventureId);
 
-  if (!adventure) {
+  if (!adventure) 
     return res.status(404).send('Adventure not found');
-  }
 
   res.json({ adventure: adventure });
 });
@@ -48,20 +42,29 @@ router.post('/add-adventure', adventureValidator, async (req, res) => {
   }
 });
 
-router.put('/adventure/:id', adventureValidator, async (req, res) => {
+router.put('/adventure/:id', upload.single('images'), adventureValidator, async (req, res) => {
   const result = validationResult(req)
   const adventureId = req.params.id;
 
   if (result.isEmpty()) {
     const adventure = await Adventure.findById(adventureId);
-    const { country, city, date, duration, travelStyle, images, videos } = req.body;
+    const { country, city, date, duration, travelStyle, videos } = req.body;
+
+    if (req.file) {
+      adventure.images.push({
+        originalName: req.file.originalName,
+        path: req.file.path,
+        size: req.file.size,
+        mimeType: req.file.mimeType,
+        uploadedDate: new Date()
+      })
+    }
 
     adventure.country = country;
     adventure.city = city;
     adventure.date = date;
     adventure.duration = duration;
     adventure.travelStyle = travelStyle;
-    adventure.images = images;
     adventure.videos = videos;
 
     await adventure.save();
@@ -78,18 +81,13 @@ router.put('/adventure/:id', adventureValidator, async (req, res) => {
 router.delete('/adventures/:id', async (req, res) => {
   const adventureId = req.params.id;
 
-  try {
-    const adventure = await Adventure.findByIdAndDelete(adventureId);
-    if (!adventureId) return res.status(404).send('Adventure not found');
+  const adventure = await Adventure.findByIdAndDelete(adventureId);
+  if (!adventureId) return res.status(404).send('Adventure not found');
 
-    res.status(200).json({
-      message: 'Adventure deleted successfully',
-      deletedAdventure: adventure,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
-  }
+  res.status(200).json({
+    message: 'Adventure deleted successfully',
+    deletedAdventure: adventure,
+  });
 });
 
 module.exports = router;
