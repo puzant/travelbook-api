@@ -52,10 +52,10 @@ router.put('/adventure/:id', upload.single('images'), adventureValidator, async 
 
     if (req.file) {
       adventure.images.push({
-        originalName: req.file.originalName,
+        originalName: req.file.originalname,
         path: req.file.path,
         size: req.file.size,
-        mimeType: req.file.mimeType,
+        mimeType: req.file.mimetype,
         uploadedDate: new Date()
       })
     }
